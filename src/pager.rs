@@ -40,24 +40,16 @@ impl PagerKind {
     fn from_bin(bin: &str) -> PagerKind {
         use std::path::Path;
 
-        let file_stem = Path::new(bin).file_stem();
-
-        match file_stem.map(|s| s.to_string_lossy()).as_deref() {
+        match Path::new(bin)
+            .file_stem()
+            .map(|s| s.to_string_lossy())
+            .as_deref()
+        {
             Some("bat") => PagerKind::Bat,
             Some("less") => PagerKind::Less,
             Some("more") => PagerKind::More,
             Some("most") => PagerKind::Most,
-            _ => {
-                if env::args_os()
-                    .nth(0)
-                    .map(|arg0| Path::new(&arg0).file_stem() == file_stem)
-                    .unwrap_or(false)
-                {
-                    PagerKind::Bat
-                } else {
-                    PagerKind::Unknown
-                }
-            }
+            _ => PagerKind::Unknown,
         }
     }
 }
